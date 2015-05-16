@@ -6,13 +6,13 @@ skips :: [a] -> [[a]]
 skips xs = map (`f` xs) [1..length xs]
   where f n = map snd . filter ((==n) . fst) . zip (cycle [1..n])
 
-  -- I actually like this solution too. Seems a bit more readable or no?
--- skips :: [a] -> [[a]]
--- skips xs = map (f xs) [0..length xs]
---   where f ys n
---          | n >= length ys  = []
---          | otherwise = y : f yx n
---           where (y:yx) = drop n ys
+-- I actually like this solution too. Seems a bit more readable or no?
+skips' :: [a] -> [[a]]
+skips' xs = map (f xs) [0..length xs]
+  where f ys n
+         | n >= length ys  = []
+         | otherwise = y : f yx n
+          where (y:yx) = drop n ys
 
 localMaxima :: [Integer] -> [Integer]
 localMaxima (x:xs@(y:z:_))
