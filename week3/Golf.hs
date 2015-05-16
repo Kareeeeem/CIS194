@@ -1,16 +1,18 @@
 module Golf where
 
 import qualified Data.List as L
--- import qualified Data.Maybe as M
 
 skips :: [a] -> [[a]]
 skips xs = map (`f` xs) [1..length xs]
   where f n = map snd . filter ((==n) . fst) . zip (cycle [1..n])
 
-  -- where f ys n
-  --        | n >= length ys  = []
-  --        | otherwise = y : f yx n
-  --         where (y:yx) = drop n ys
+  -- I actually like this solution too. Seems a bit more readable or no?
+-- skips :: [a] -> [[a]]
+-- skips xs = map (f xs) [0..length xs]
+--   where f ys n
+--          | n >= length ys  = []
+--          | otherwise = y : f yx n
+--           where (y:yx) = drop n ys
 
 localMaxima :: [Integer] -> [Integer]
 localMaxima (x:xs@(y:z:_))
@@ -20,33 +22,26 @@ localMaxima _ = []
 
 histogram :: [Integer] -> String
 histogram xs =
-    let a x = length . filter (==x) $ xs
-        m = maximum $ map length . L.group . L.sort $ xs
-        f x = show x  ++ "=" ++ replicate (a x) '*' ++ replicate (m - a x) ' '
-     in L.intercalate "\n" (L.reverse . L.transpose . map f $ [0..9])
+    let c = map (\n -> (n, length $ filter (==n) xs)) [0..9]
+        m = maximum (map snd c)
+     in renderHist . map (histLine m) $ c
 
+renderHist :: [String] -> String
+renderHist = L.intercalate "\n" . L.reverse . L.transpose
+
+histLine :: Show a => Int -> (a, Int) -> String
+histLine m x = show (fst x) ++ "=" ++
+               replicate (snd x) '*' ++
+               replicate (m - snd x) ' '
+
+-- Same as the previous but in one funtion
 histogram' :: [Integer] -> String
 histogram' xs =
-    let c = map (\n -> (n, length $ filter (==n) xs)) [0..9]
-        m = maximum . map snd $ c
-        f x = show (fst x) ++ "=" ++
-          replicate (snd x) '*' ++
-          replicate (m - snd x) ' '
-     in L.intercalate "\n" (counterClock . map f $ c)
-       where counterClock = L.reverse . L.transpose
+        let count  = map (\n -> (n, length $ filter (==n) xs)) [0..9]
+            cclock = L.reverse . L.transpose
+            m      = maximum . map snd $ count
+            f x    = show (fst x) ++ "=" ++
+                     replicate (snd x) '*' ++
+                     replicate (m - snd x) ' '
+         in L.intercalate "\n" (cclock . map f $ count)
 
--- histogram :: [Integer] -> String
--- histogram xs =
---     let s = map (\l@(x:_) -> (x, length l)) . L.group . L.sort $ xs
---         m = maximum . map snd $ s
---         a x = L.find ((==x).fst) s
---         f x = show x  ++ "=" ++ padR m (score (a x))
---      in L.intercalate "\n" (counterClock . map f $ [0..9])
---        where counterClock = L.reverse . L.transpose
-
--- score :: M.Maybe (Integer, Int) -> String
--- score Nothing = ""
--- score (Just (_, y)) = replicate y '*'
-
--- padR :: Int -> String -> String
--- padR n s = s ++ replicate (n - length s) ' '
