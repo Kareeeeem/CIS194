@@ -43,5 +43,5 @@ histogram' xs =
             f x    = show (fst x) ++ "=" ++
                      replicate (snd x) '*' ++
                      replicate (m - snd x) ' '
-         in L.intercalate "\n" (cclock . map f $ count)
+         in L.intercalate "\n" . cclock . map f $ count
 
