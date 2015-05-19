@@ -22,6 +22,8 @@ foldTree = foldr treeInsert Leaf
         treeInsert x (Node n l y' r)
           | d l < d r = Node n (treeInsert x l) y' r
           | d l > d r = Node n l y' (treeInsert x r)
+          -- Oops I switched left and right. But when switching them back the
+          -- results change :S.
           | otherwise = Node m (treeInsert x r) y' l
               where d Leaf = 0
                     d (Node n' _ _ _) = n'
