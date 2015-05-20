@@ -27,7 +27,7 @@ histogram xs =
      in renderHist . map (histLine m) $ c
 
 renderHist :: [String] -> String
-renderHist = L.intercalate "\n" . L.reverse . L.transpose
+renderHist = unlines . L.reverse . L.transpose
 
 histLine :: Show a => Int -> (a, Int) -> String
 histLine m x = show (fst x) ++ "=" ++
@@ -38,10 +38,9 @@ histLine m x = show (fst x) ++ "=" ++
 histogram' :: [Integer] -> String
 histogram' xs =
         let count  = map (\n -> (n, length $ filter (==n) xs)) [0..9]
-            cclock = L.reverse . L.transpose
             m      = maximum . map snd $ count
             f x    = show (fst x) ++ "=" ++
                      replicate (snd x) '*' ++
                      replicate (m - snd x) ' '
-         in L.intercalate "\n" . cclock . map f $ count
+         in unlines . L.reverse . L.transpose . map f $ count
 
